@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: shopscript-backend
+    env: docker
+    plan: starter
+    repo: Pinku254/shopscript
+    branch: master
+    root: backend
+    dockerfilePath: backend/Dockerfile
+    buildCommand: mvn -DskipTests package
+    startCommand: java -jar backend/target/backend-0.0.1-SNAPSHOT.jar
+    envVars: []
