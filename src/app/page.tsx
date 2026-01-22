@@ -4,48 +4,33 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Product } from '@/types';
 import ProductCard from '@/components/ProductCard';
-import { api } from '@/lib/api';
+
+// Mock data for demonstration - in a real app this would come from the backend API
+const DEAL_PRODUCTS: Product[] = [
+  { id: 101, name: 'Smart Fitness Band', description: 'Track your steps and health.', price: 49.99, imageUrl: 'https://images.unsplash.com/photo-1576243345690-4e4b79b63288?auto=format&fit=crop&q=80&w=300', stock: 100, category: 'daily_special' },
+  { id: 102, name: 'Wireless Earbuds', description: 'Crystal clear sound quality.', price: 79.99, imageUrl: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&q=80&w=300', stock: 50, category: 'daily_special' },
+  { id: 103, name: 'Gaming Mouse', description: 'High precision for gamers.', price: 35.00, imageUrl: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&q=80&w=300', stock: 20, category: 'daily_special' },
+  { id: 104, name: '4K Monitor', description: 'Ultra HD display for work.', price: 299.00, imageUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=300', stock: 15, category: 'daily_special' },
+];
+
+const CATEGORY_PRODUCTS: Product[] = [
+  { id: 201, name: 'Girl\'s Summer Dress', description: 'Light and breezy for summer.', price: 25.00, imageUrl: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=300', stock: 30, category: 'girls' },
+  { id: 202, name: 'Boy\'s Denim Jacket', description: 'Cool style for everyday.', price: 45.00, imageUrl: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&q=80&w=300', stock: 25, category: 'boys' },
+  { id: 203, name: 'Kid\'s Sneakers', description: 'Comfortable running shoes.', price: 30.00, imageUrl: 'https://images.unsplash.com/photo-1514989940723-e88754dfe329?auto=format&fit=crop&q=80&w=300', stock: 40, category: 'kids' },
+  { id: 204, name: 'Toy Robot', description: 'Interactive fun for kids.', price: 55.00, imageUrl: 'https://images.unsplash.com/photo-1485546246426-74dc88dec4d9?auto=format&fit=crop&q=80&w=300', stock: 10, category: 'kids' },
+];
 
 export default function Home() {
   const [dealProducts, setDealProducts] = useState<Product[]>([]);
-  const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [heroSettings, setHeroSettings] = useState({
-    title: 'Find Your Next Obsession',
-    subtitle: 'Shop the latest trends in fashion, electronics, and home essentials. unbeatable prices and premium quality.',
-    imageUrl: 'https://images.unsplash.com/photo-1472851294608-415522f97817?auto=format&fit=crop&q=80&w=1920'
-  });
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        // Fetch Site Settings
-        const settings: any = await api.get('/settings');
-        if (settings) {
-          setHeroSettings({
-            title: settings.hero_title || heroSettings.title,
-            subtitle: settings.hero_subtitle || heroSettings.subtitle,
-            imageUrl: settings.hero_image || heroSettings.imageUrl
-          });
-        }
-
-        // Fetch Products (in real app, you'd filter by 'deals' or 'recommended')
-        // For now, let's just grab some products
-        const allProducts = (await api.get('/products')) as unknown as Product[];
-
-        // Randomly slice for display if backend doesn't support specific queries yet
-        if (allProducts && allProducts.length > 0) {
-          setDealProducts(allProducts.slice(0, 4));
-          setRecommendedProducts(allProducts.slice(4, 8));
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data', error);
-        setLoading(false);
-      }
-    }
-    fetchData();
+    // Simulate API fetch delay
+    const timer = setTimeout(() => {
+      setDealProducts(DEAL_PRODUCTS);
+      setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -55,17 +40,17 @@ export default function Home() {
         <div className="absolute inset-0">
           <img
             className="w-full h-full object-cover opacity-60"
-            src={heroSettings.imageUrl}
+            src="https://images.unsplash.com/photo-1472851294608-415522f97817?auto=format&fit=crop&q=80&w=1920"
             alt="Hero Background"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-transparent to-transparent"></div>
         </div>
         <div className="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white drop-shadow-md">
-            {heroSettings.title}
+            Find Your Next Obsession
           </h1>
           <p className="mt-6 text-xl text-gray-300 max-w-3xl">
-            {heroSettings.subtitle}
+            Shop the latest trends in fashion, electronics, and home essentials. unbeatable prices and premium quality.
           </p>
           <div className="mt-10">
             <Link href="/register" className="inline-block bg-white border border-transparent rounded-md py-3 px-8 text-base font-medium text-gray-900 hover:bg-gray-100 transform hover:scale-105 transition-all shadow-lg">
@@ -115,10 +100,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-8">Recommended For You</h2>
           <div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-            {recommendedProducts.map((product) => (
+            {CATEGORY_PRODUCTS.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
-            {recommendedProducts.length === 0 && <p className="col-span-4 text-center text-gray-500">More products coming soon!</p>}
           </div>
         </div>
       </div>
