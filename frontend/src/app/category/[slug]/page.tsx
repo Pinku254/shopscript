@@ -18,6 +18,7 @@ const getMockProducts = (category: string): Product[] => {
         price: Math.floor(Math.random() * 50) + 20,
         imageUrl: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4', // Generic clothing image
         stock: Math.floor(Math.random() * 20) + 1,
+        category: category
     }));
 };
 

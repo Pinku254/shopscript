@@ -7,17 +7,17 @@ import ProductCard from '@/components/ProductCard';
 
 // Mock data for demonstration - in a real app this would come from the backend API
 const DEAL_PRODUCTS: Product[] = [
-  { id: 101, name: 'Smart Fitness Band', description: 'Track your steps and health.', price: 49.99, imageUrl: 'https://images.unsplash.com/photo-1576243345690-4e4b79b63288?auto=format&fit=crop&q=80&w=300', stock: 100 },
-  { id: 102, name: 'Wireless Earbuds', description: 'Crystal clear sound quality.', price: 79.99, imageUrl: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&q=80&w=300', stock: 50 },
-  { id: 103, name: 'Gaming Mouse', description: 'High precision for gamers.', price: 35.00, imageUrl: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&q=80&w=300', stock: 20 },
-  { id: 104, name: '4K Monitor', description: 'Ultra HD display for work.', price: 299.00, imageUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=300', stock: 15 },
+  { id: 101, name: 'Smart Fitness Band', description: 'Track your steps and health.', price: 49.99, imageUrl: 'https://images.unsplash.com/photo-1576243345690-4e4b79b63288?auto=format&fit=crop&q=80&w=300', stock: 100, category: 'daily_special' },
+  { id: 102, name: 'Wireless Earbuds', description: 'Crystal clear sound quality.', price: 79.99, imageUrl: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&q=80&w=300', stock: 50, category: 'daily_special' },
+  { id: 103, name: 'Gaming Mouse', description: 'High precision for gamers.', price: 35.00, imageUrl: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&q=80&w=300', stock: 20, category: 'daily_special' },
+  { id: 104, name: '4K Monitor', description: 'Ultra HD display for work.', price: 299.00, imageUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=300', stock: 15, category: 'daily_special' },
 ];
 
 const CATEGORY_PRODUCTS: Product[] = [
-  { id: 201, name: 'Girl\'s Summer Dress', description: 'Light and breezy for summer.', price: 25.00, imageUrl: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=300', stock: 30 },
-  { id: 202, name: 'Boy\'s Denim Jacket', description: 'Cool style for everyday.', price: 45.00, imageUrl: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&q=80&w=300', stock: 25 },
-  { id: 203, name: 'Kid\'s Sneakers', description: 'Comfortable running shoes.', price: 30.00, imageUrl: 'https://images.unsplash.com/photo-1514989940723-e88754dfe329?auto=format&fit=crop&q=80&w=300', stock: 40 },
-  { id: 204, name: 'Toy Robot', description: 'Interactive fun for kids.', price: 55.00, imageUrl: 'https://images.unsplash.com/photo-1485546246426-74dc88dec4d9?auto=format&fit=crop&q=80&w=300', stock: 10 },
+  { id: 201, name: 'Girl\'s Summer Dress', description: 'Light and breezy for summer.', price: 25.00, imageUrl: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=300', stock: 30, category: 'girls' },
+  { id: 202, name: 'Boy\'s Denim Jacket', description: 'Cool style for everyday.', price: 45.00, imageUrl: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&q=80&w=300', stock: 25, category: 'boys' },
+  { id: 203, name: 'Kid\'s Sneakers', description: 'Comfortable running shoes.', price: 30.00, imageUrl: 'https://images.unsplash.com/photo-1514989940723-e88754dfe329?auto=format&fit=crop&q=80&w=300', stock: 40, category: 'kids' },
+  { id: 204, name: 'Toy Robot', description: 'Interactive fun for kids.', price: 55.00, imageUrl: 'https://images.unsplash.com/photo-1485546246426-74dc88dec4d9?auto=format&fit=crop&q=80&w=300', stock: 10, category: 'kids' },
 ];
 
 export default function Home() {
