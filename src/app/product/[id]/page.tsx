@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Product, Review } from '@/types';
 import { api } from '@/lib/api';
+import { useCart } from '@/context/CartContext';
 
 export default function ProductDetails() {
     const params = useParams();
@@ -55,16 +56,20 @@ export default function ProductDetails() {
         }
     };
 
-    const handleBuyNow = async () => {
-        try {
-            // Hardcoded user ID for demo
-            await api.post(`/orders/user/1`, {
-                totalAmount: product?.price,
-                status: 'PENDING'
-            });
-            alert('Order placed successfully!');
-        } catch (error) {
-            alert('Failed to place order');
+    const { addToCart } = useCart();
+    const router = useRouter();
+
+    const handleAddToCart = () => {
+        if (product) {
+            addToCart(product);
+            alert('Added to cart');
+        }
+    };
+
+    const handleBuyNow = () => {
+        if (product) {
+            addToCart(product);
+            router.push('/checkout');
         }
     };
 
@@ -87,11 +92,19 @@ export default function ProductDetails() {
 
                 {/* Product Info */}
                 <div className="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0">
+                    <div className="mb-6">
+                        <button
+                            onClick={() => router.back()}
+                            className="text-sm text-gray-500 hover:text-gray-900 flex items-center"
+                        >
+                            ← Back
+                        </button>
+                    </div>
                     <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">{product.name}</h1>
 
                     <div className="mt-3">
                         <h2 className="sr-only">Product information</h2>
-                        <p className="text-3xl text-gray-900">${product.price}</p>
+                        <p className="text-3xl text-gray-900">₹{product.price}</p>
                     </div>
 
                     <div className="mt-6">
@@ -99,10 +112,16 @@ export default function ProductDetails() {
                         <div className="text-base text-gray-700 space-y-6" dangerouslySetInnerHTML={{ __html: product.description }} />
                     </div>
 
-                    <div className="mt-10 flex sm:flex-col1">
+                    <div className="mt-10 flex space-x-4">
+                        <button
+                            onClick={handleAddToCart}
+                            className="flex-1 bg-white border border-gray-300 rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        >
+                            Add to Cart
+                        </button>
                         <button
                             onClick={handleBuyNow}
-                            className="max-w-xs flex-1 bg-gray-900 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-gray-500 sm:w-full"
+                            className="flex-1 bg-gray-900 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-gray-500"
                         >
                             Buy Now
                         </button>

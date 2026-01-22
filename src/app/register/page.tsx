@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
     const [username, setUsername] = useState('');
@@ -11,7 +12,18 @@ export default function RegisterPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [role, setRole] = useState('USER');
     const [error, setError] = useState('');
-    const { login } = useAuth();
+    const { login, user } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (user) {
+            if (user.role === 'ADMIN') {
+                router.push('/admin');
+            } else {
+                router.push('/');
+            }
+        }
+    }, [user, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

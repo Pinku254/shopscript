@@ -4,22 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Product } from '@/types';
 import ProductCard from '@/components/ProductCard';
-
-// Mock data generator helper
-const getMockProducts = (category: string): Product[] => {
-    const baseId = category === 'girls' ? 200 : category === 'boys' ? 300 : 400;
-    const prefixes = ['Summer', 'Winter', 'Casual', 'Party', 'Sport'];
-    const items = category === 'kids' ? ['Toy', 'Game', 'Puzzle', 'Bike'] : ['Shirt', 'Pants', 'Shoes', 'Jacket'];
-
-    return Array.from({ length: 8 }).map((_, i) => ({
-        id: baseId + i,
-        name: `${category.charAt(0).toUpperCase() + category.slice(1)}'s ${prefixes[i % prefixes.length]} ${items[i % items.length]}`,
-        description: `High quality ${category} item for everyday use.`,
-        price: Math.floor(Math.random() * 50) + 20,
-        imageUrl: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4', // Generic clothing image
-        stock: Math.floor(Math.random() * 20) + 1,
-    }));
-};
+import { api } from '@/lib/api';
 
 export default function CategoryPage() {
     const params = useParams();
@@ -30,11 +15,23 @@ export default function CategoryPage() {
     useEffect(() => {
         if (slug) {
             setLoading(true);
-            // Simulate API fetch
-            setTimeout(() => {
-                setProducts(getMockProducts(slug));
-                setLoading(false);
-            }, 500);
+            const fetchProducts = async () => {
+                try {
+                    const allProducts = (await api.get('/products')) as unknown as Product[];
+                    // Filter by category
+                    // Assuming the category field in DB matches the slug 
+                    // (slugs are usually lowercase: 'kids', 'boys', 'girls')
+                    const filtered = allProducts.filter(p =>
+                        p.category && p.category.toLowerCase() === slug.toLowerCase()
+                    );
+                    setProducts(filtered);
+                } catch (error) {
+                    console.error("Failed to fetch products", error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchProducts();
         }
     }, [slug]);
 
@@ -56,9 +53,15 @@ export default function CategoryPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-                        {products.map((product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
+                        {products.length > 0 ? (
+                            products.map((product) => (
+                                <ProductCard key={product.id} product={product} />
+                            ))
+                        ) : (
+                            <div className="col-span-full text-center py-12">
+                                <p className="text-gray-500 text-lg">No products found in this category.</p>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
