@@ -52,7 +52,11 @@ export default function AuthModal() {
             }
         } catch (err: any) {
             console.error(err);
-            setError(err.response?.data?.message || 'Authentication failed. Please check your credentials.');
+            if (err.response && err.response.data) {
+                setError(typeof err.response.data === 'string' ? err.response.data : err.response.data.message || 'Authentication failed. Please check your credentials.');
+            } else {
+                setError('Authentication failed. Please check your credentials.');
+            }
         } finally {
             setLoading(false);
         }

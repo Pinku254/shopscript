@@ -27,9 +27,14 @@ export default function LoginPage() {
         e.preventDefault();
         try {
             const user = await api.post('/users/login', { username, password });
-            login(user);
-        } catch (err) {
-            setError('Invalid credentials');
+            login(user); // Ensure this is also awaited or handles the promise correctly if it's async
+        } catch (err: any) {
+            if (err.response && err.response.data) {
+                // If the backend returns a simple string message
+                setError(typeof err.response.data === 'string' ? err.response.data : err.response.data.message || 'Invalid credentials');
+            } else {
+                setError('An error occurred during login. Please try again.');
+            }
         }
     };
 

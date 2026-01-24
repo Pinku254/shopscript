@@ -8,17 +8,19 @@ import { useRouter } from 'next/navigation';
 import { downloadExcel } from '@/lib/export';
 
 export default function AdminDashboard() {
-    const [activeTab, setActiveTab] = useState<'kids' | 'boys' | 'girls' | 'daily_special' | 'orders' | 'reviews' | 'site_settings' | 'users'>('kids');
+    const [activeTab, setActiveTab] = useState<'kids' | 'boys' | 'girls' | 'daily_special' | 'orders' | 'reviews' | 'site_settings' | 'users' | 'banners'>('kids');
     const [products, setProducts] = useState<Product[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [usersList, setUsersList] = useState<any[]>([]); // Using any for simplicity or define User type
-    const [siteSettings, setSiteSettings] = useState({ hero_title: '', hero_subtitle: '', hero_image: '' });
+    const [banners, setBanners] = useState<Product[]>([]); // Reusing Product type as Banner for simplicity for now, or I should define Banner type. The user asked for "image scrolling", effectively banners. I'll check if I should create a new type, but for now reuse Product structure or just {id, imageUrl, name (title), description}. Let's assume using Product structure with category 'banner' is easiest way to leverage existing API.
+    const [siteSettings, setSiteSettings] = useState({ hero_title: '', hero_subtitle: '', hero_image: '', hero_video: '' });
     const { user, isLoading: authLoading, logout } = useAuth();
     const router = useRouter();
 
     // New Product Form State
     const [newProduct, setNewProduct] = useState({ name: '', description: '', price: '', imageUrl: '', stock: '', category: 'kids' });
+    const [imageInputType, setImageInputType] = useState<'url' | 'upload'>('url');
     const [selectedUser, setSelectedUser] = useState<any>(null);
 
     useEffect(() => {
@@ -35,14 +37,14 @@ export default function AdminDashboard() {
 
     // Update category when tab changes
     useEffect(() => {
-        if (['kids', 'boys', 'girls', 'daily_special'].includes(activeTab)) {
+        if (['kids', 'boys', 'girls', 'daily_special', 'banners'].includes(activeTab)) {
             setNewProduct(prev => ({ ...prev, category: activeTab }));
         }
     }, [activeTab]);
 
     const loadData = async () => {
         try {
-            if (['kids', 'boys', 'girls', 'daily_special'].includes(activeTab)) {
+            if (['kids', 'boys', 'girls', 'daily_special', 'banners'].includes(activeTab)) {
                 // For now, fetch all and filter client-side. 
                 // In a real app, you'd fetch /products?category=...
                 const data = (await api.get('/products')) as unknown as Product[];
@@ -58,7 +60,8 @@ export default function AdminDashboard() {
                 setSiteSettings({
                     hero_title: data.hero_title || '',
                     hero_subtitle: data.hero_subtitle || '',
-                    hero_image: data.hero_image || ''
+                    hero_image: data.hero_image || '',
+                    hero_video: data.hero_video || ''
                 });
             } else if (activeTab === 'users') {
                 const [usersData, ordersData] = await Promise.all([
@@ -227,6 +230,7 @@ export default function AdminDashboard() {
                         { id: 'boys', label: 'Boys Fashion' },
                         { id: 'girls', label: 'Girls Fashion' },
                         { id: 'daily_special', label: 'Daily Specials' },
+                        { id: 'banners', label: 'Home Banners' },
                         { id: 'orders', label: 'Orders' },
                         { id: 'reviews', label: 'Reviews' },
                         { id: 'site_settings', label: 'Site Settings' },
@@ -254,7 +258,7 @@ export default function AdminDashboard() {
 
             {/* Main Content */}
             <div className="ml-64 flex-1 p-8">
-                {['kids', 'boys', 'girls', 'daily_special'].includes(activeTab) && (
+                {['kids', 'boys', 'girls', 'daily_special', 'banners'].includes(activeTab) && (
                     <div className="space-y-8">
                         <div className="flex justify-between items-center">
                             <h2 className="text-2xl font-bold text-gray-900 capitalize">{activeTab.replace('_', ' ')} Products</h2>
@@ -300,48 +304,69 @@ export default function AdminDashboard() {
                                         />
                                     </div>
                                     <div className="col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
-                                        <div className="flex items-center space-x-4 p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={async (e) => {
-                                                    if (e.target.files && e.target.files[0]) {
-                                                        const file = e.target.files[0];
-                                                        const formData = new FormData();
-                                                        formData.append('file', file);
-
-                                                        try {
-                                                            const res = (await api.post('/uploads/image', formData, {
-                                                                headers: { 'Content-Type': 'multipart/form-data' }
-                                                            })) as any;
-                                                            setNewProduct({ ...newProduct, imageUrl: res.imageUrl });
-                                                        } catch (err) {
-                                                            console.error("Upload failed", err);
-                                                            alert("Image upload failed");
-                                                        }
-                                                    }
-                                                }}
-                                                className="block w-full text-sm text-gray-500
-                                                    file:mr-4 file:py-2 file:px-4
-                                                    file:rounded-full file:border-0
-                                                    file:text-sm file:font-semibold
-                                                    file:bg-gray-900 file:text-white
-                                                    hover:file:bg-gray-700 cursor-pointer"
-                                            />
-                                            {newProduct.imageUrl && (
-                                                <img src={newProduct.imageUrl} alt="Preview" className="h-16 w-16 object-cover rounded-lg shadow-sm" />
-                                            )}
-                                        </div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Image Source Type</label>
+                                        <select
+                                            className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-3 border mb-4"
+                                            value={imageInputType}
+                                            onChange={(e) => setImageInputType(e.target.value as 'url' | 'upload')}
+                                        >
+                                            <option value="url">Image Link (URL)</option>
+                                            <option value="upload">Upload Image</option>
+                                        </select>
                                     </div>
+
                                     <div className="col-span-2">
-                                        <textarea
-                                            placeholder="Product Description"
-                                            value={newProduct.description}
-                                            onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                                            className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-3 border"
-                                            rows={3}
-                                        />
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {imageInputType === 'url' ? 'Image URL' : 'Upload Image'}
+                                        </label>
+
+                                        {imageInputType === 'url' ? (
+                                            <input
+                                                type="text"
+                                                placeholder="https://example.com/image.jpg"
+                                                value={newProduct.imageUrl}
+                                                onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
+                                                className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-3 border"
+                                            />
+                                        ) : (
+                                            <div className="flex items-center space-x-4 p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        if (e.target.files && e.target.files[0]) {
+                                                            const file = e.target.files[0];
+                                                            const formData = new FormData();
+                                                            formData.append('file', file);
+
+                                                            try {
+                                                                const res = (await api.post('/uploads/image', formData, {
+                                                                    headers: { 'Content-Type': 'multipart/form-data' }
+                                                                })) as any;
+                                                                setNewProduct({ ...newProduct, imageUrl: res.imageUrl });
+                                                                alert('Image uploaded successfully');
+                                                            } catch (err) {
+                                                                console.error("Upload failed", err);
+                                                                alert("Image upload failed");
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="block w-full text-sm text-gray-500
+                                                        file:mr-4 file:py-2 file:px-4
+                                                        file:rounded-full file:border-0
+                                                        file:text-sm file:font-semibold
+                                                        file:bg-gray-900 file:text-white
+                                                        hover:file:bg-gray-700 cursor-pointer"
+                                                />
+                                            </div>
+                                        )}
+
+                                        {newProduct.imageUrl && (
+                                            <div className="mt-4">
+                                                <p className="text-xs text-gray-500 mb-2">Preview:</p>
+                                                <img src={newProduct.imageUrl} alt="Preview" className="h-24 w-24 object-cover rounded-lg shadow-sm border border-gray-200" />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="flex justify-end">
@@ -541,10 +566,21 @@ export default function AdminDashboard() {
                                 />
                                 {siteSettings.hero_image && (
                                     <div className="mt-4">
-                                        <p className="text-xs text-gray-500 mb-2">Preview:</p>
+                                        <p className="text-xs text-gray-500 mb-2">Preview Image:</p>
                                         <img src={siteSettings.hero_image} alt="Hero Preview" className="h-48 w-full object-cover rounded-lg shadow-md" />
                                     </div>
                                 )}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Hero Background Video URL (Optional)</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., /videos/hero.mp4 or external URL"
+                                    value={siteSettings.hero_video}
+                                    onChange={(e) => setSiteSettings({ ...siteSettings, hero_video: e.target.value })}
+                                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-3 border"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">If provided, this video will play in the background instead of the image/banners.</p>
                             </div>
                             <div className="flex justify-end">
                                 <button type="submit" className="bg-green-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-green-700 shadow-md transition-all hover:scale-105">

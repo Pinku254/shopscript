@@ -83,31 +83,54 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        System.out.println("Login attempt for username: " + loginRequest.getUsername());
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        // Check if Admin
-        java.util.Optional<com.shopscript.backend.entity.Admin> admin = userService
-                .findAdminByUsername(userDetails.getUsername());
-        if (admin.isPresent()) {
-            return ResponseEntity.ok(new JwtResponse(jwt,
-                    admin.get().getId(), // Uses Admin ID (might overlap with User ID but usually separate context)
-                    admin.get().getUsername(),
-                    "ADMIN"));
+        // Check if user exists first (both User and Admin tables)
+        if (userService.findByUsername(loginRequest.getUsername()).isEmpty() &&
+                userService.findAdminByUsername(loginRequest.getUsername()).isEmpty()) {
+            return ResponseEntity.status(404).body("User not registered. Please create an account first.");
         }
 
-        // Must be normal user
-        User user = userService.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                user.getId(),
-                user.getUsername(),
-                user.getRole().name()));
+            System.out.println("Authentication successful for: " + loginRequest.getUsername());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
+
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            System.out.println(
+                    "Principal: " + userDetails.getUsername() + ", Authorities: " + userDetails.getAuthorities());
+
+            // Check if Admin
+            java.util.Optional<com.shopscript.backend.entity.Admin> admin = userService
+                    .findAdminByUsername(userDetails.getUsername());
+            if (admin.isPresent()) {
+                System.out.println("User identified as Admin");
+                return ResponseEntity.ok(new JwtResponse(jwt,
+                        admin.get().getId(), // Uses Admin ID
+                        admin.get().getUsername(),
+                        "ADMIN"));
+            }
+
+            // check user
+            System.out.println("Checking for regular user");
+            User user = userService.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            System.out.println("User identified as Regular User: " + user.getRole());
+            return ResponseEntity.ok(new JwtResponse(jwt,
+                    user.getId(),
+                    user.getUsername(),
+                    user.getRole().name()));
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            return ResponseEntity.status(401).body("Invalid password. Please try again.");
+        } catch (Exception e) {
+            System.out.println("Login failed for unknown reason: " + loginRequest.getUsername());
+            System.out.println("Exception message: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Internal server error");
+        }
     }
 }

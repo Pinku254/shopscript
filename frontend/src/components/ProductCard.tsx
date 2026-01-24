@@ -31,16 +31,16 @@ export default function ProductCard({ product }: ProductCardProps) {
                 />
             </div>
             <div className="flex-1 p-4 space-y-2 flex flex-col">
-                <h3 className="text-sm font-medium text-gray-900">
+                <h3 className="text-sm font-medium text-[var(--color-text-main)]">
                     <a href={`/product/${product.id}`} onClick={handleProductClick}>
                         <span aria-hidden="true" className="absolute inset-0" />
                         {product.name}
                     </a>
                 </h3>
-                <p className="text-sm text-gray-500 line-clamp-2">{product.description}</p>
+                <p className="text-sm text-[var(--color-text-light)] line-clamp-2">{product.description}</p>
                 <div className="flex-1 flex items-end justify-between">
-                    <p className="text-base font-medium text-gray-900">₹{product.price}</p>
-                    <p className="text-sm text-gray-500">{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</p>
+                    <p className="text-base font-medium text-[var(--color-text-main)]">₹{product.price}</p>
+                    <p className="text-sm text-[var(--color-text-light)]">{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</p>
                 </div>
             </div>
         </div>

@@ -26,11 +26,15 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response: AxiosResponse) => response.data,
     (error: AxiosError) => {
-        if (error.response && error.response.status === 401) {
-            // Auto logout if 401
+        // Don't auto-redirect if getting 401 on login page (wrong password)
+        if (error.response && error.response.status === 401 && !error.config?.url?.includes('login')) {
+            // Auto logout if 401 on other requests
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            window.location.href = '/login';
+            // Check if we are in browser before using window
+            if (typeof window !== 'undefined') {
+                // window.location.href = '/login'; // Disabled auto-redirect to allow public pages to partially load
+            }
         }
         return Promise.reject(error);
     }
