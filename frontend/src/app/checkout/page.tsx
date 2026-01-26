@@ -6,6 +6,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 
+import Notification from '@/components/Notification';
+
 export default function CheckoutPage() {
     const { cartItems, cartTotal, clearCart } = useCart();
     const { user } = useAuth();
@@ -25,6 +27,21 @@ export default function CheckoutPage() {
     const [altMobile, setAltMobile] = useState('');
 
     const [paymentMethod, setPaymentMethod] = useState('Credit Card');
+
+    // Notification State
+    const [notification, setNotification] = useState({
+        message: '',
+        type: 'info' as 'success' | 'error' | 'info',
+        isVisible: false
+    });
+
+    const showNotification = (message: string, type: 'success' | 'error' | 'info') => {
+        setNotification({ message, type, isVisible: true });
+    };
+
+    const closeNotification = () => {
+        setNotification(prev => ({ ...prev, isVisible: false }));
+    };
 
     // Comprehensive Data for India
     const statesAndDistricts: Record<string, string[]> = {
@@ -82,7 +99,7 @@ export default function CheckoutPage() {
 
     const handlePlaceOrder = async () => {
         if (!user) {
-            alert('Please login to place an order');
+            showNotification('Please login to place an order', 'error');
             return;
         }
 
@@ -96,9 +113,10 @@ export default function CheckoutPage() {
                 paymentMethod: paymentMethod,
                 paymentStatus: paymentMethod === 'Cash on Delivery' ? 'PENDING' : 'PAID',
                 items: cartItems.map(item => ({
-                    product: { id: item.product.id }, // Send only ID to backend
+                    product: { id: item.product.id },
                     quantity: item.quantity,
-                    price: item.product.price
+                    price: item.price,
+                    selectedSize: item.selectedSize
                 }))
             };
 
@@ -110,13 +128,20 @@ export default function CheckoutPage() {
             setStep(3);
         } catch (error) {
             console.error('Order failed', error);
-            alert('Failed to place order. Please try again.');
+            showNotification('Failed to place order. Please try again.', 'error');
         }
     };
 
     return (
-        <div className="max-w-2xl mx-auto pt-16 pb-24 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Checkout</h1>
+        <div className="max-w-2xl mx-auto pt-16 pb-24 px-4 sm:px-6 lg:max-w-7xl lg:px-8 relative">
+            <Notification
+                message={notification.message}
+                type={notification.type}
+                isVisible={notification.isVisible}
+                onClose={closeNotification}
+            />
+
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">Checkout</h1>
 
             {step === 1 && (
                 <div className="mt-12">
@@ -128,62 +153,62 @@ export default function CheckoutPage() {
                             ← Back
                         </button>
                     </div>
-                    <h2 className="text-lg font-medium text-gray-900 mb-6">Step 1: Shipping Address</h2>
+                    <h2 className="text-lg font-medium text-foreground mb-6">Step 1: Shipping Address</h2>
 
                     <div className="space-y-6">
                         <div>
-                            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name *</label>
+                            <label htmlFor="fullName" className="block text-sm font-medium text-foreground">Full Name *</label>
                             <input
                                 type="text"
                                 id="fullName"
                                 required
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                className="mt-1 block w-full border border-input rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-input text-foreground"
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="addressLine1" className="block text-sm font-medium text-gray-700">Address Line 1 *</label>
+                            <label htmlFor="addressLine1" className="block text-sm font-medium text-foreground">Address Line 1 *</label>
                             <input
                                 type="text"
                                 id="addressLine1"
                                 required
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                className="mt-1 block w-full border border-input rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-input text-foreground"
                                 value={addressLine1}
                                 onChange={(e) => setAddressLine1(e.target.value)}
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="mobile" className="block text-sm font-medium text-gray-700">Mobile No *</label>
+                            <label htmlFor="mobile" className="block text-sm font-medium text-foreground">Mobile No *</label>
                             <input
                                 type="tel"
                                 id="mobile"
                                 required
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                className="mt-1 block w-full border border-input rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-input text-foreground"
                                 value={mobile}
                                 onChange={(e) => setMobile(e.target.value)}
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="altMobile" className="block text-sm font-medium text-gray-700">Alternative Mobile No (Optional)</label>
+                            <label htmlFor="altMobile" className="block text-sm font-medium text-foreground">Alternative Mobile No (Optional)</label>
                             <input
                                 type="tel"
                                 id="altMobile"
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                className="mt-1 block w-full border border-input rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-input text-foreground"
                                 value={altMobile}
                                 onChange={(e) => setAltMobile(e.target.value)}
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="addressLine2" className="block text-sm font-medium text-gray-700">Address Line 2 (Optional)</label>
+                            <label htmlFor="addressLine2" className="block text-sm font-medium text-foreground">Address Line 2 (Optional)</label>
                             <input
                                 type="text"
                                 id="addressLine2"
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                className="mt-1 block w-full border border-input rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-input text-foreground"
                                 value={addressLine2}
                                 onChange={(e) => setAddressLine2(e.target.value)}
                             />
@@ -191,11 +216,11 @@ export default function CheckoutPage() {
 
                         <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                             <div>
-                                <label htmlFor="state" className="block text-sm font-medium text-gray-700">State *</label>
+                                <label htmlFor="state" className="block text-sm font-medium text-foreground">State *</label>
                                 <select
                                     id="state"
                                     required
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    className="mt-1 block w-full border border-input rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-input text-foreground"
                                     value={state}
                                     onChange={(e) => {
                                         setState(e.target.value);
@@ -210,12 +235,12 @@ export default function CheckoutPage() {
                             </div>
 
                             <div>
-                                <label htmlFor="district" className="block text-sm font-medium text-gray-700">District *</label>
+                                <label htmlFor="district" className="block text-sm font-medium text-foreground">District *</label>
                                 <select
                                     id="district"
                                     required
                                     disabled={!state}
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
+                                    className="mt-1 block w-full border border-input rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-input text-foreground disabled:bg-secondary disabled:text-muted-foreground"
                                     value={district}
                                     onChange={(e) => setDistrict(e.target.value)}
                                 >
@@ -227,24 +252,24 @@ export default function CheckoutPage() {
                             </div>
 
                             <div>
-                                <label htmlFor="city" className="block text-sm font-medium text-gray-700">City / Town *</label>
+                                <label htmlFor="city" className="block text-sm font-medium text-foreground">City / Town *</label>
                                 <input
                                     type="text"
                                     id="city"
                                     required
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    className="mt-1 block w-full border border-input rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-input text-foreground"
                                     value={city}
                                     onChange={(e) => setCity(e.target.value)}
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700">ZIP / Postal Code *</label>
+                                <label htmlFor="zipCode" className="block text-sm font-medium text-foreground">ZIP / Postal Code *</label>
                                 <input
                                     type="text"
                                     id="zipCode"
                                     required
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    className="mt-1 block w-full border border-input rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-input text-foreground"
                                     value={zipCode}
                                     onChange={(e) => setZipCode(e.target.value)}
                                 />
@@ -258,10 +283,10 @@ export default function CheckoutPage() {
                                 if (fullName && addressLine1 && city && state && district && zipCode && mobile) {
                                     setStep(2);
                                 } else {
-                                    alert('Please fill in all required fields.');
+                                    showNotification('Please fill in all required fields.', 'error');
                                 }
                             }}
-                            className="bg-indigo-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="bg-primary border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-primary-foreground hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                         >
                             Next: Payment
                         </button>
@@ -274,13 +299,13 @@ export default function CheckoutPage() {
             }
             {step === 2 && (
                 <div className="mt-12">
-                    <h2 className="text-lg font-medium text-gray-900">Step 2: Payment</h2>
+                    <h2 className="text-lg font-medium text-foreground">Step 2: Payment</h2>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-700">Payment Method</label>
+                        <label className="block text-sm font-medium text-foreground">Payment Method</label>
                         <select
                             value={paymentMethod}
                             onChange={(e) => setPaymentMethod(e.target.value)}
-                            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md border"
+                            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-input focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md border bg-input text-foreground"
                         >
                             <option>Credit Card</option>
                             <option>PayPal</option>
@@ -288,18 +313,21 @@ export default function CheckoutPage() {
                         </select>
                     </div>
 
-                    <div className="mt-8 border-t border-gray-200 pt-8">
-                        <h3 className="text-lg font-medium text-gray-900">Order Summary</h3>
+                    <div className="mt-8 border-t border-border pt-8">
+                        <h3 className="text-lg font-medium text-foreground">Order Summary</h3>
                         <dl className="mt-4 space-y-6">
                             {cartItems.map((item) => (
-                                <div key={item.product.id} className="flex items-center justify-between">
-                                    <dt className="text-sm text-gray-600">{item.product.name} (x{item.quantity})</dt>
-                                    <dd className="text-sm font-medium text-gray-900">₹{(item.product.price * item.quantity).toFixed(2)}</dd>
+                                <div key={`${item.product.id}-${item.selectedSize || 'default'}`} className="flex items-center justify-between">
+                                    <dt className="text-sm text-muted-foreground">
+                                        {item.product.name} (x{item.quantity})
+                                        {item.selectedSize && <span className="ml-2 font-medium text-primary">Size: {item.selectedSize}</span>}
+                                    </dt>
+                                    <dd className="text-sm font-medium text-foreground">₹{(item.price * item.quantity).toFixed(2)}</dd>
                                 </div>
                             ))}
-                            <div className="flex items-center justify-between border-t border-gray-200 pt-6">
-                                <dt className="text-base font-medium text-gray-900">Total</dt>
-                                <dd className="text-base font-medium text-gray-900">₹{cartTotal.toFixed(2)}</dd>
+                            <div className="flex items-center justify-between border-t border-border pt-6">
+                                <dt className="text-base font-medium text-foreground">Total</dt>
+                                <dd className="text-base font-medium text-foreground">₹{cartTotal.toFixed(2)}</dd>
                             </div>
                         </dl>
                     </div>
@@ -313,7 +341,7 @@ export default function CheckoutPage() {
                         </button>
                         <button
                             onClick={handlePlaceOrder}
-                            className="bg-indigo-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="bg-primary border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-primary-foreground hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                         >
                             Place Order
                         </button>
@@ -326,14 +354,14 @@ export default function CheckoutPage() {
                     <svg className="mx-auto h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <h2 className="mt-4 text-lg font-medium text-gray-900">Order placed successfully!</h2>
-                    <p className="mt-2 text-sm text-gray-500">
+                    <h2 className="mt-4 text-lg font-medium text-foreground">Order placed successfully!</h2>
+                    <p className="mt-2 text-sm text-muted-foreground">
                         Thank you for your purchase. We have received your order.
                     </p>
                     <div className="mt-6">
                         <button
                             onClick={() => router.push('/')}
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                         >
                             Continue Shopping
                         </button>

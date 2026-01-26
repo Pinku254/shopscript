@@ -20,8 +20,17 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public Optional<User> findByMobile(String mobile) {
+        return userRepository.findByMobile(mobile);
     }
 
     public User findById(Long id) {

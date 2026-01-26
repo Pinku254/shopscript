@@ -12,7 +12,9 @@ public class ProductService {
     private ProductRepository productRepository;
 
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        return productRepository.findAll().stream()
+                .filter(p -> !p.isDeleted())
+                .toList();
     }
 
     public Product getProductById(Long id) {
@@ -30,14 +32,23 @@ public class ProductService {
         product.setPrice(productDetails.getPrice());
         product.setImageUrl(productDetails.getImageUrl());
         product.setStock(productDetails.getStock());
+        product.setCategory(productDetails.getCategory());
+        product.setSubcategory(productDetails.getSubcategory());
+        product.setDetails(productDetails.getDetails());
+        product.setSizes(productDetails.getSizes());
+        product.setSizePrices(productDetails.getSizePrices());
         return productRepository.save(product);
     }
 
     public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
+        Product product = getProductById(id);
+        product.setDeleted(true);
+        productRepository.save(product);
     }
 
     public List<Product> searchProducts(String query) {
-        return productRepository.findByNameContainingIgnoreCase(query);
+        return productRepository.findByNameContainingIgnoreCase(query).stream()
+                .filter(p -> !p.isDeleted())
+                .toList();
     }
 }

@@ -17,6 +17,15 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(length = 20)
+    private String mobile;
+
+    @Column(nullable = true)
+    private String securityQuestion;
+
+    @Column(nullable = true)
+    private String securityAnswer;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

@@ -1,41 +1,129 @@
 @import "tailwindcss";
 
 :root {
-  --background: #111111;
-  --foreground: #171717;
+  /* LIGHT MODE (Default - used when .dark is NOT present) */
+  --background: #ffffff;
+  --foreground: #09090b;
+  /* Zinc 950 text */
+
+  --card: #ffffff;
+  --card-foreground: #09090b;
+
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+
+  --primary: #ea580c;
+  /* Orange 600 */
+  --primary-foreground: #fafafa;
+
+  --secondary: #f4f4f5;
+  /* Zinc 100 */
+  --secondary-foreground: #18181b;
+
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  /* Zinc 500 */
+
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+
+  --border: #e4e4e7;
+  /* Zinc 200 */
+  --input: #ffffff;
+  --ring: #ea580c;
+}
+
+.dark {
+  /* DARK MODE OVERRIDES */
+  --background: #09090b;
+  /* Zinc 950 */
+  --foreground: #fafafa;
+  /* Zinc 50 */
+
+  --card: #18181b;
+  /* Zinc 900 */
+  --card-foreground: #fafafa;
+
+  --popover: #18181b;
+  --popover-foreground: #fafafa;
+
+  --primary: #ea580c;
+  /* Orange 600 */
+  --primary-foreground: #fafafa;
+
+  --secondary: #27272a;
+  /* Zinc 800 */
+  --secondary-foreground: #fafafa;
+
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  /* Zinc 400 */
+
+  --accent: #27272a;
+  --accent-foreground: #fafafa;
+
+  --destructive: #ef4444;
+  /* Red 500 */
+  --destructive-foreground: #fafafa;
+
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #ea580c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--primary);
+  --color-text-main: var(--foreground);
+  --color-text-light: var(--muted-foreground);
 
-  /* Brand Colors - Dark Automotive Theme */
-  --color-primary: #FFFFFF;
-  /* White */
-  --color-secondary: #000000;
-  /* Black */
-  --color-accent: #FF4500;
-  /* Red-Orange */
-  --color-accent-hover: #E03E00;
-  /* Darker Red */
-  --color-text-main: #FFFFFF;
-  /* White */
-  --color-text-light: #A0A0A0;
-  /* Light Gray */
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    /* Keep dark mode default or override if requested? User didn't specify dark mode. */
-    --foreground: #ededed;
-  }
+  /* Retain specific color codes for manual overrides if needed */
+  --color-zinc-950: #09090b;
+  --color-zinc-900: #18181b;
+  --color-zinc-800: #27272a;
+  --color-zinc-100: #fafafa;
+  --color-zinc-400: #a1a1aa;
 }
 
 body {
-  background: var(--background);
-  color: var(--color-text-main);
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Inputs adapt to theme naturally now, removed strict !important overrides to allow theme switching */
+input,
+select,
+textarea {
+  background-color: var(--input);
+  color: var(--foreground);
+  border-color: var(--border);
+  border-width: 1px;
+}
+
+::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
 }

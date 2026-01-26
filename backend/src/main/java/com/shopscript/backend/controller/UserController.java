@@ -4,6 +4,7 @@ import com.shopscript.backend.dto.JwtResponse;
 import com.shopscript.backend.dto.LoginRequest;
 import com.shopscript.backend.entity.User;
 import com.shopscript.backend.security.JwtUtils;
+import java.util.Optional;
 import com.shopscript.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -132,5 +133,50 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Internal server error");
         }
+    }
+
+    @PostMapping("/forgot-password/get-question")
+    public ResponseEntity<?> getSecurityQuestion(@RequestBody java.util.Map<String, String> request) {
+        String username = request.get("username");
+        if (username == null || username.isEmpty()) {
+            return ResponseEntity.badRequest().body("Username is required");
+        }
+
+        Optional<User> userOpt = userService.findByUsername(username);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+
+        User user = userOpt.get();
+        if (user.getSecurityQuestion() == null || user.getSecurityQuestion().isEmpty()) {
+            return ResponseEntity.badRequest().body("No security question set for this account");
+        }
+
+        return ResponseEntity.ok(java.util.Map.of("securityQuestion", user.getSecurityQuestion()));
+    }
+
+    @PostMapping("/forgot-password/reset-with-answer")
+    public ResponseEntity<?> resetPasswordWithSecurityAnswer(@RequestBody java.util.Map<String, String> request) {
+        String username = request.get("username");
+        String answer = request.get("answer");
+        String newPassword = request.get("newPassword");
+
+        if (username == null || answer == null || newPassword == null) {
+            return ResponseEntity.badRequest().body("Missing required fields");
+        }
+
+        Optional<User> userOpt = userService.findByUsername(username);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+
+        User user = userOpt.get();
+        if (user.getSecurityAnswer() == null || !user.getSecurityAnswer().equalsIgnoreCase(answer.trim())) {
+            return ResponseEntity.status(400).body("Incorrect security answer");
+        }
+
+        userService.updatePassword(user, newPassword);
+
+        return ResponseEntity.ok("Password reset successfully");
     }
 }

@@ -51,7 +51,7 @@ export default function Home() {
     <div className="bg-[var(--background)] min-h-screen">
       {/* Hero Section Logic: Video > Banners > Static */}
       {settings.hero_video ? (
-        <div className="relative h-[600px] w-full overflow-hidden font-sans">
+        <div className="relative h-[400px] md:h-[600px] w-full overflow-hidden font-sans">
           {/* Video Background */}
           <video
             autoPlay
@@ -67,10 +67,10 @@ export default function Home() {
           {/* Content */}
           <div className="relative z-10 flex flex-col items-start justify-center h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
             <p className="text-xl md:text-2xl font-medium mb-2 opacity-90">
-              {settings.hero_title || 'Shop Our Premium Auto Parts'}
+              {settings.hero_title || 'Discover the Latest Styles'}
             </p>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight max-w-3xl">
-              {settings.hero_subtitle || 'Build Your Dream Car Today.\nNow 15% Off On All Items.'}
+              {settings.hero_subtitle || 'Elevate Your Wardrobe.\nSignature Collections for Every Occasion.'}
             </h1>
             <Link
               href="/category/daily_special"
@@ -84,7 +84,7 @@ export default function Home() {
         <BannerCarousel banners={bannerProducts} />
       ) : (
         /* Fallback Static Hero if no video and no banners - NOW UPDATED TO VIDEO CENTERED DESIGN */
-        <div className="relative h-[700px] w-full overflow-hidden flex items-center justify-center text-center font-sans tracking-tight">
+        <div className="relative h-[500px] md:h-[700px] w-full overflow-hidden flex items-center justify-center text-center font-sans tracking-tight">
           {/* Background Video */}
           <video
             autoPlay
@@ -100,18 +100,18 @@ export default function Home() {
 
           {/* Centered Content */}
           <div className="relative z-20 max-w-5xl mx-auto px-4 flex flex-col items-center">
-            <h1 className="text-6xl sm:text-7xl md:text-9xl font-black mb-2 leading-none uppercase select-none">
+            <h1 className="text-5xl sm:text-7xl md:text-9xl font-black mb-2 leading-none uppercase select-none">
               {/* Hollow/Transparent Text Effect */}
               <span className="block text-transparent transition-all duration-500" style={{ WebkitTextStroke: '2px rgba(255,255,255,0.8)' }}>
-                NORDIC
+                TRENDY
               </span>
               <span className="block text-[var(--color-accent)] mt-2">
-                MINIMALIST.
+                CLOTHING.
               </span>
             </h1>
 
             <p className="mt-6 text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto font-light tracking-wide">
-              Elegant furniture, clothing, and lifestyle essentials. Designed for simplicity and warmth.
+              Discover the latest trends in men's, women's, and kids' fashion. High-quality fabrics and stylish designs for every season.
             </p>
 
             <div className="mt-10">
@@ -132,7 +132,7 @@ export default function Home() {
       {/* Category Links */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {['Girls', 'Boys', 'Kids'].map((category) => (
+          {['Women', 'Men', 'Kids'].map((category) => (
             <Link key={category} href={`/category/${category.toLowerCase()}`} className="group relative bg-[#1A1A1A] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all border border-gray-800 overflow-hidden">
               <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 rounded-full bg-gray-800 group-hover:bg-gray-700 transition-colors z-0"></div>
               <h3 className="text-2xl font-bold text-white z-10 relative">{category}'s Fashion</h3>

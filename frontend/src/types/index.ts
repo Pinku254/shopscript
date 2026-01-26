@@ -6,6 +6,10 @@ export interface Product {
     imageUrl: string;
     stock: number;
     category: string;
+    subcategory?: string;
+    sizes?: string;
+    details?: string;
+    sizePrices?: string;
 }
 
 export interface OrderItem {
@@ -13,6 +17,7 @@ export interface OrderItem {
     product: Product;
     quantity: number;
     price: number;
+    selectedSize?: string;
 }
 
 export interface Order {

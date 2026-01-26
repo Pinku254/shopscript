@@ -2,7 +2,6 @@ import * as XLSX from 'xlsx';
 
 export function downloadExcel(data: any[], filename: string) {
     if (!data || data.length === 0) {
-        alert('No data to export');
         return;
     }
 
