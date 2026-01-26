@@ -10,7 +10,6 @@ export default function RegisterPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [role, setRole] = useState('USER');
     const [securityQuestion, setSecurityQuestion] = useState('What is your favorite pet?');
     const [securityAnswer, setSecurityAnswer] = useState('');
     const [error, setError] = useState('');
@@ -37,9 +36,9 @@ export default function RegisterPage() {
         }
 
         try {
-            const user = await api.post('/users/register', { username, password, role, securityQuestion, securityAnswer });
+            const user = await api.post('/users/register', { username, password, role: 'USER', securityQuestion, securityAnswer });
             login(user);
-        } catch (err) {
+        } catch (_err) {
             setError('Registration failed. Username might be taken.');
         }
     };
@@ -108,7 +107,7 @@ export default function RegisterPage() {
                                 onChange={(e) => setSecurityQuestion(e.target.value)}
                             >
                                 <option value="What is your favorite pet?">What is your favorite pet?</option>
-                                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                                <option value="What is your mother's maiden name?">What is your mother&apos;s maiden name?</option>
                                 <option value="What was your first car?">What was your first car?</option>
                                 <option value="What city were you born in?">What city were you born in?</option>
                             </select>
