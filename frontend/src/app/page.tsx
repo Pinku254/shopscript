@@ -10,7 +10,7 @@ export default function Home() {
   const [dealProducts, setDealProducts] = useState<Product[]>([]);
   const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
   const [bannerProducts, setBannerProducts] = useState<Product[]>([]);
-  const [settings, setSettings] = useState<any>({});
+  const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
