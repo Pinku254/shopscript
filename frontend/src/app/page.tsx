@@ -111,7 +111,7 @@ export default function Home() {
             </h1>
 
             <p className="mt-6 text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto font-light tracking-wide">
-              Discover the latest trends in men's, women's, and kids' fashion. High-quality fabrics and stylish designs for every season.
+              Discover the latest trends in men&apos;s, women&apos;s, and kids&apos; fashion. High-quality fabrics and stylish designs for every season.
             </p>
 
             <div className="mt-10">
@@ -135,7 +135,7 @@ export default function Home() {
           {['Women', 'Men', 'Kids'].map((category) => (
             <Link key={category} href={`/category/${category.toLowerCase()}`} className="group relative bg-[#1A1A1A] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all border border-gray-800 overflow-hidden">
               <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 rounded-full bg-gray-800 group-hover:bg-gray-700 transition-colors z-0"></div>
-              <h3 className="text-2xl font-bold text-white z-10 relative">{category}'s Fashion</h3>
+              <h3 className="text-2xl font-bold text-white z-10 relative">{category}&apos;s Fashion</h3>
               <p className="mt-2 text-gray-400 z-10 relative group-hover:text-[var(--color-accent)] transition-colors">Shop Collection &rarr;</p>
             </Link>
           ))}
@@ -145,7 +145,7 @@ export default function Home() {
       {/* Today's Best Deals */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-[var(--color-text-main)]">Today's Best Deals</h2>
+          <h2 className="text-3xl font-bold text-[var(--color-text-main)]">Today&apos;s Best Deals</h2>
           <Link href="/category/daily_special" className="text-[var(--color-accent)] hover:text-[#ff3300] font-medium">See all deals &rarr;</Link>
         </div>
 

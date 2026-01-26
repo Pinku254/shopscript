@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Product, Order, Review } from '@/types';
+import { Product, Order, Review, User } from '@/types';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -26,7 +26,7 @@ export default function AdminDashboard() {
     const [products, setProducts] = useState<Product[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [reviews, setReviews] = useState<Review[]>([]);
-    const [usersList, setUsersList] = useState<any[]>([]);
+    const [usersList, setUsersList] = useState<User[]>([]);
     const [siteSettings, setSiteSettings] = useState({
         hero_title: '',
         hero_subtitle: '',
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
         price: '',
         imageUrl: '',
         stock: '',
-        category: 'kids' as any,
+        category: 'kids' as Product['category'],
         subcategory: '',
         sizes: '',
         details: '',
@@ -49,7 +49,7 @@ export default function AdminDashboard() {
     });
     const [imageInputType, setImageInputType] = useState<'url' | 'upload'>('url');
     const [editingProductId, setEditingProductId] = useState<number | null>(null);
-    const [selectedUser, setSelectedUser] = useState<any>(null);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
     // Notification State
     const [notification, setNotification] = useState({
@@ -545,12 +545,12 @@ export default function AdminDashboard() {
                                                 );
                                             }) : (
                                                 <p className="col-span-full text-xs text-muted-foreground italic p-4 bg-secondary/50 rounded-lg text-center border border-dashed border-border">
-                                                    No sizes added. Click "+ Add Size" to define sizes and their specific prices.
+                                                    No sizes added. Click &quot;+ Add Size&quot; to define sizes and their specific prices.
                                                 </p>
                                             )}
                                         </div>
                                         <p className="text-[10px] text-muted-foreground italic">
-                                            * Base price (set above) will be used if a size doesn't have a specific price.
+                                            * Base price (set above) will be used if a size doesn&apos;t have a specific price.
                                         </p>
                                     </div>
 
