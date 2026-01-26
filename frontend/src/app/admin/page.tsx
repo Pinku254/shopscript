@@ -92,7 +92,7 @@ export default function AdminDashboard() {
     // Update category when tab changes
     useEffect(() => {
         if (['kids', 'men', 'women', 'daily_special', 'banners'].includes(activeTab)) {
-            setNewProduct(prev => ({ ...prev, category: activeTab as any, subcategory: '' }));
+            setNewProduct(prev => ({ ...prev, category: activeTab as Product['category'], subcategory: '' }));
         }
         setSidebarOpen(false); // Auto-close sidebar on mobile after choosing a tab
     }, [activeTab]);
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
                 const data = (await api.get('/reviews/pending')) as unknown as Review[];
                 setReviews(data);
             } else if (activeTab === 'site_settings') {
-                const data: any = await api.get('/settings').catch(() => ({}));
+                const data = (await api.get('/settings').catch(() => ({}))) as Record<string, string>;
                 setSiteSettings({
                     hero_title: data.hero_title || '',
                     hero_subtitle: data.hero_subtitle || '',
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
                     api.get('/users'),
                     api.get('/orders')
                 ]);
-                setUsersList(usersData as unknown as any[]);
+                setUsersList(usersData as unknown as User[]);
                 setOrders(ordersData as unknown as Order[]);
             }
         } catch (error) {
