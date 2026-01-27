@@ -322,7 +322,12 @@ export default function AdminDashboard() {
                     const currentSizes = newProduct.sizes ? newProduct.sizes.split(',').map(x => x.trim()).filter(x => x) : [];
                     if (s && !currentSizes.includes(s)) {
                         const newSizes = [...currentSizes, s.trim()].join(',');
-                        const prices = newProduct.sizePrices ? JSON.parse(newProduct.sizePrices) : {};
+                        let prices = {};
+                        try {
+                            prices = newProduct.sizePrices ? JSON.parse(newProduct.sizePrices) : {};
+                        } catch (e) {
+                            console.error("Failed to parse sizePrices", e);
+                        }
                         const newPrices = { ...prices, [s.trim()]: p };
 
                         setNewProduct({
@@ -508,7 +513,12 @@ export default function AdminDashboard() {
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                             {newProduct.sizes ? newProduct.sizes.split(',').map(x => x.trim()).filter(x => x).map((size) => {
-                                                const prices = newProduct.sizePrices ? JSON.parse(newProduct.sizePrices) : {};
+                                                let prices: Record<string, number> = {};
+                                                try {
+                                                    prices = newProduct.sizePrices ? JSON.parse(newProduct.sizePrices) : {};
+                                                } catch (e) {
+                                                    console.error("Error parsing sizePrices", e);
+                                                }
                                                 return (
                                                     <div key={size} className="flex flex-col p-3 bg-secondary rounded-lg border border-border relative group">
                                                         <button

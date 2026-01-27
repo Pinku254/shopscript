@@ -174,7 +174,12 @@ export default function ProductDetails() {
                             ? product.sizes.split(',').map(s => s.trim())
                             : ["S", "M", "L", "XL"];
 
-                        const sizePrices = product.sizePrices ? JSON.parse(product.sizePrices) : {};
+                        let sizePrices: Record<string, number> = {};
+                        try {
+                            sizePrices = product.sizePrices ? JSON.parse(product.sizePrices) : {};
+                        } catch (e) {
+                            console.error("Error parsing sizePrices", e);
+                        }
 
                         return (
                             <div className={`mt-8 p-4 rounded-lg transition-colors ${showSizeError ? 'bg-red-500/10 border border-red-500/20' : 'bg-secondary/50 border border-border'}`}>

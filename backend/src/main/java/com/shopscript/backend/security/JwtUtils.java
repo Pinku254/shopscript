@@ -16,8 +16,9 @@ import java.util.Date;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    // In a real app, store this in application.properties
-    private String jwtSecret = "shopscriptSecretKeyWhichShouldBeVeryLongAndComplexToEnsureSecurity1234567890";
+    // In a real app, store this in application.properties or environment variables
+    private String jwtSecret = System.getenv("JWT_SECRET") != null ? System.getenv("JWT_SECRET")
+            : "shopscriptSecretKeyWhichShouldBeVeryLongAndComplexToEnsureSecurity1234567890";
 
     private int jwtExpirationMs = 86400000; // 24 hours
 
